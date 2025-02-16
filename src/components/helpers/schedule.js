@@ -1,11 +1,5 @@
 import { generateRandomNumberInRange } from '@/utils/utils';
 
-const createNewValidRandomIndex = (usedIndexes, horseListLength) => {
-  const randomIndex = generateRandomNumberInRange(0, horseListLength - 1);
-  if (!usedIndexes.includes(randomIndex)) return randomIndex;
-  return createNewValidRandomIndex(usedIndexes, horseListLength);
-};
-
 const defaultList = Array.from({ length: 10 }, (_, index) => ({
   position: index + 1,
   name: '-',
@@ -25,22 +19,15 @@ const createSchedule = (horseList) => {
 
 // creates random horse list for each round
 const getRandomHorses = (horseList) => {
+  const availableIndexes = [...Array(horseList.length)].map((item, i) => i);
   const randomHorseList = [];
-  const usedIndexes = new Set();
 
   for (let i = 0; i < 10; i++) {
-    const _used = Array.from(usedIndexes);
-    const randomIndex = generateRandomNumberInRange(0, horseList.length - 1);
-
-    if (_used.includes(randomIndex)) {
-      const newRandomIndex = createNewValidRandomIndex(_used, horseList.length - 1);
-      randomHorseList.push({ position: i + 1, ...horseList[newRandomIndex] });
-      usedIndexes.add(newRandomIndex);
-    } else {
-      randomHorseList.push({ position: i + 1, ...horseList[randomIndex] });
-      usedIndexes.add(randomIndex);
-    }
+    const randomIndex = generateRandomNumberInRange(0, availableIndexes.length - 1);
+    const selectedIndex = availableIndexes.splice(randomIndex, 1)[0];
+    randomHorseList.push({ position: i + 1, ...horseList[selectedIndex] });
   }
+
   return randomHorseList;
 };
 
